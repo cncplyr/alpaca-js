@@ -20,9 +20,15 @@
 'when'          { return 'WHEN' }
 'xor'           { return 'XOR' }
 [a-zA-Z]+       { return 'IDENTIFIER' }
+[0-9]+?\b       { return 'NUMBER' }
+[\^v<>]         { return 'ARROW' }
 \".\"           { return 'QUOTED-CHAR' }
 '.'             { return '.' }
+','             { return ',' }
 ';'             { return ';' }
+'('             { return '(' }
+')'             { return ')' }
+'='             { return '=' }
 <<EOF>>         { return 'EOF' }
 .               { return 'INVALID' }
 /lex
@@ -37,7 +43,7 @@ alpaca
     ;
 
 defns
-    : defn 
+    : defn
     | defn ';' defns
     ;
 
@@ -49,12 +55,100 @@ defn
 
 stateDefn
     : STATE stateId
-        { $$ = 'state' + $2; }
+/*    | STATE stateId rules*/
     | STATE stateId QUOTED-CHAR
-        { $$ = 'state' + $2 + $3; }
+/*    | STATE stateId QUOTED-CHAR rules*/
+    | STATE stateId membershipDecl
+/*    | STATE stateId membershipDecl rules*/
+    | STATE stateId QUOTED-CHAR membershipDecl
+/*    | STATE stateId QUOTED-CHAR membershipDecl rules*/
+    ;
+
+classDefn
+    : CLASS classId
+/*    | CLASS classId rules*/
+    | CLASS classId membershipDecl
+/*    | CLASS classId membershipDecl rules*/
+    ;
+
+nbhdDefn
+    : NEIGHBOURHOOD nbhdId neighbourhood
+    ;
+
+classId
+    : IDENTIFIER
     ;
 
 stateId
     : IDENTIFIER
-        { $$ = $1; }
+    ;
+
+nbhdId
+    : IDENTIFIER
+    ;
+
+membershipDecl
+    : classRef
+    ;
+
+classRef
+    : IS classId
+    ;
+
+rules
+    : rule
+    | rule ',' rules
+    ;
+
+rule
+    : TO stateRef
+    | TO stateRef WHEN expression
+    ;
+
+stateRef
+    : stateId
+    | arrow-chain
+    | ME
+    ;
+
+arrow-chain
+    : ARROW
+    | ARROW arrow-chain
+    ;
+
+expression
+    : term
+    | term AND term
+    | term OR term
+    | term XOR term
+    ;
+
+term
+    : adjacencyPred
+    | '(' expression ')'
+    | NOT term
+    | boolPrimitive
+    | relationalPred
+    ;
+
+relationalPred
+    : stateRef '=' stateRef
+    | stateRef '=' classRef
+    ;
+
+adjacencyPred
+    : NUMBER IN neighbourhood stateId
+    | NUMBER IN neighbourhood classId
+    | NUMBER IN nbhdId stateId
+    | NUMBER IN nbhdId classId
+    ;
+
+boolPrimitive
+    : TRUE
+    | FALSE
+    | GUESS
+    ;
+
+neighbourhood
+    : '(' arrow-chain ')'
     ;
