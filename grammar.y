@@ -55,20 +55,20 @@ defn
 
 stateDefn
     : STATE stateId
-/*    | STATE stateId rules*/
+    | STATE stateId rules
     | STATE stateId QUOTED-CHAR
-/*    | STATE stateId QUOTED-CHAR rules*/
+    | STATE stateId QUOTED-CHAR rules
     | STATE stateId membershipDecl
-/*    | STATE stateId membershipDecl rules*/
+    | STATE stateId membershipDecl rules
     | STATE stateId QUOTED-CHAR membershipDecl
-/*    | STATE stateId QUOTED-CHAR membershipDecl rules*/
+    | STATE stateId QUOTED-CHAR membershipDecl rules
     ;
 
 classDefn
     : CLASS classId
-/*    | CLASS classId rules*/
+    | CLASS classId rules
     | CLASS classId membershipDecl
-/*    | CLASS classId membershipDecl rules*/
+    | CLASS classId membershipDecl rules
     ;
 
 nbhdDefn
@@ -138,9 +138,9 @@ relationalPred
 
 adjacencyPred
     : NUMBER IN neighbourhood stateId
-    | NUMBER IN neighbourhood classId
+/*    | NUMBER IN neighbourhood classId */
     | NUMBER IN nbhdId stateId
-    | NUMBER IN nbhdId classId
+/*    | NUMBER IN nbhdId classId */
     ;
 
 boolPrimitive
